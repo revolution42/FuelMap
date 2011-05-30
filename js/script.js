@@ -100,7 +100,39 @@ $(document).ready(function()
 		});
 		$( "#amount" ).html(distance.slider( "value" ) );
 		
-		
+		if( typeof navigator.geolocation != 'undefined' )
+		{
+			try
+			{
+				navigator.geolocation.getCurrentPosition(
+					function(position)
+					{
+						var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+						var geocoder = new google.maps.Geocoder();
+						geocoder.geocode({latLng: userLocation},
+							function( data, status )
+							{
+								if( google.maps.GeocoderStatus.OK == status && data.length > 0 )
+								{
+									var firstAddress = data[0];
+									$('#fromAddress').val(firstAddress.formatted_address);
+									$('#toAddress').val('Perth, Western Australia');
+									$('a#search').click();
+								}
+							}
+						);
+					},
+					function(error)
+					{
+						alert(error.code + ': ' + error.message);
+					}
+				);
+			}
+			catch(e)
+			{
+			}
+		}
 	});
 	
 	search.click(function()
