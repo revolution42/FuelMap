@@ -109,8 +109,24 @@ $(document).ready(function()
 		return false;
 	});
 	
-	search.button();
+	search.button({
+            icons: {
+                primary: "ui-icon-search"
+            }
+        });
+	
 
+	var back = $(".back");
+	back.button({
+            icons: {
+                primary: "ui-icon-circle-arrow-w"
+            }
+        });
+
+	back.click(function()
+	{
+		$("#controls").show("slide", { direction: "left" }, 1000);
+	});
 
 });
 
@@ -122,6 +138,24 @@ function route()
 		document.getElementById("toAddress").value,
 		parseFloat($( "#distance" ).slider( "value" )),
 		brands.getSelected(),
-		vouchers.getSelected()
+		vouchers.getSelected(),
+		function(stationList)
+		{
+			var priceContainer = $("#stationList .content");	
+			priceContainer.empty();
+			$("#controls").hide("slide", { direction: "left" }, 1000);
+			$.each( stationList, function(i, station)
+			{
+				var stationObj = $("<a class='station ui-button ui-widget ui-state-default ui-corner-all ui-state-hover'>" + station.getPrice() + "<br/>" + station.tradingName + "</a>");
+				
+				priceContainer.append(stationObj);
+				stationObj.click(function()
+				{
+					fuelMap.map.setCenter(station.latlng);
+					fuelMap.map.setZoom(15);
+				});
+			})
+		}
+		
 	);
 }

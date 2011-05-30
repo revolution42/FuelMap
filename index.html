@@ -37,6 +37,11 @@
 <body>
 
 <div class="page">
+	<div id="stationList">
+		<a class="back">Back</a>
+		<hr />
+		<div class="content"></div>
+	</div>
 	<div id="controls">
 		<label class="label" for="brands">Brand</label>
 		<select id="brands" multiple="multiple"></select>
@@ -55,8 +60,10 @@
 		
 		<div class="label">Within <span id="amount"></span> kilometers</div>
 		<div id="distance"></div> 
-		<input id="search" type="submit" value="Search"/> 
+		<a id="search">Search</a> 
 	</div>
+	
+	
 	<div id="map"></div>
 </div>
 

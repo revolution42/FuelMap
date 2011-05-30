@@ -103,3 +103,20 @@ Station.loadFromXml = function(xml)
 	return station;
 }
 
+Station.prototype.applyVoucher = function(amount)
+{
+	this.voucher = amount;
+}
+
+Station.prototype.getPrice = function()
+{
+	var price = new Number(this.price);
+	if( this.voucher !== undefined )
+	{
+		price -= this.voucher;
+	}
+	
+	return price.toFixed(2);
+}
+
+
