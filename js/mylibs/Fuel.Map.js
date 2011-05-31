@@ -1,16 +1,14 @@
-function FuelMap(mapCanvas, fuelPrices){
+Fuel.Map = function(mapCanvas, fuelPrices){
 	this.load(mapCanvas, fuelPrices);
 }
 
-FuelMap.prototype.load = function(mapCanvas, fuelPrices){
+Fuel.Map.prototype.load = function(mapCanvas, fuelPrices){
 	var mapOptions = {
         center: new google.maps.LatLng(-31.970804,115.856323),
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         zoom: 4
       };
-      
 
-      
 	this.map = new google.maps.Map(mapCanvas, mapOptions);
 	this.routeBoxer = new RouteBoxer();
 	this.directionService = new google.maps.DirectionsService();
@@ -21,7 +19,7 @@ FuelMap.prototype.load = function(mapCanvas, fuelPrices){
 	this.fuelPrices = fuelPrices;
 }
 
-FuelMap.prototype.route = function(fromAddress, toAddress, distance, brands, vouchers, callback){
+Fuel.Map.prototype.route = function(fromAddress, toAddress, distance, brands, vouchers, callback){
 	this.clearOverlays();
 	var self = this;
 	var callback = callback;
@@ -42,7 +40,7 @@ FuelMap.prototype.route = function(fromAddress, toAddress, distance, brands, vou
 	});
 }
 
-FuelMap.prototype.addOverlays = function(boxes, brands, vouchers)
+Fuel.Map.prototype.addOverlays = function(boxes, brands, vouchers)
 {
 	var stations = [];
 	
@@ -65,11 +63,10 @@ FuelMap.prototype.addOverlays = function(boxes, brands, vouchers)
 		}
 	}
 	
-	return stations.sort(FuelMap.sortPrices);
-
+	return stations.sort(Fuel.Map.sortPrices);
 }
 
-FuelMap.prototype.clearOverlays = function()
+Fuel.Map.prototype.clearOverlays = function()
 {
 	for (marker in this.markersArray) {
 		this.markersArray[marker].setMap(null);
@@ -77,7 +74,6 @@ FuelMap.prototype.clearOverlays = function()
     this.markersArray.length = 0;
 }
 
-
-FuelMap.sortPrices = function(a, b){
+Fuel.Map.sortPrices = function(a, b){
 	return (a.getPrice() - b.getPrice())
 }

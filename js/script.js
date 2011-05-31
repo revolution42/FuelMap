@@ -52,9 +52,8 @@ vouchers.getSelected = function()
 	
 $(document).ready(function()
 {
-	
-	
-	fuelPrices = new FuelPrices(function(priceList)
+
+	fuelPrices = new Fuel.Prices(function(priceList)
 	{
 		
 		for (var i=0; i < priceList.brandList.length; i++) {
@@ -72,7 +71,7 @@ $(document).ready(function()
 			vouchers.append('<option value="' + i + '">' +  priceList.voucherList[i].title + '</option>');
 		};
 		
-		fuelMap = new FuelMap(document.getElementById("map"), priceList);
+		fuelMap = new Fuel.Map(document.getElementById("map"), priceList);
 		
 		
 		brands.multiselect({
