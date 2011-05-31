@@ -41,6 +41,7 @@ Fuel.Prices.prototype.getPricesXml = function(callback)
 	var currentTime = new Date()
 	var dateString = currentTime.getFullYear() + "-" +  (currentTime.getMonth() + 1) + "-" +  currentTime.getDate();
 	
+	// Check to see if its stored locally first
 	if (Modernizr.localstorage) {
 		if( localStorage['priceXmlDate'] == dateString )
 		{
@@ -59,6 +60,7 @@ Fuel.Prices.prototype.getPricesXml = function(callback)
 		data:{'Product':2},
 		dataType: "text",
 		success: function(result) {
+			// Store the result locally
 			if (Modernizr.localstorage) {			
 				localStorage['priceXmlDate'] = dateString;
 			  	localStorage['priceXml'] = result.toString();

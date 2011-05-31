@@ -55,9 +55,7 @@ $(document).ready(function()
 
 	fuelPrices = new Fuel.Prices(function(priceList)
 	{
-		
 		for (var i=0; i < priceList.brandList.length; i++) {
-			//console.log(priceList.brandList[i]);
 			brands.append('<option value="' + i + '" selected="selected">' +  priceList.brandList[i] + '</option>');
 		};
 		
@@ -67,12 +65,10 @@ $(document).ready(function()
 		}
 		
 		for (var i=0; i < priceList.voucherList.length; i++) {
-			//console.log(priceList.brandList[i]);
 			vouchers.append('<option value="' + i + '">' +  priceList.voucherList[i].title + '</option>');
 		};
 		
 		fuelMap = new Fuel.Map(document.getElementById("map"), priceList);
-		
 		
 		brands.multiselect({
 			height: 'auto'
@@ -108,6 +104,16 @@ $(document).ready(function()
 					{
 						var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
+						fuelMap.addStationMarkers();
+						fuelMap.map.setCenter(userLocation);
+						var marker = new google.maps.Marker({
+						      position: userLocation,
+						      title:"Your Location"
+						  });
+						  marker.setMap(fuelMap.map);  
+						
+						
+
 						var geocoder = new google.maps.Geocoder();
 						geocoder.geocode({latLng: userLocation},
 							function( data, status )
@@ -116,8 +122,7 @@ $(document).ready(function()
 								{
 									var firstAddress = data[0];
 									$('#fromAddress').val(firstAddress.formatted_address);
-									$('#toAddress').val('Perth, Western Australia');
-									$('a#search').click();
+
 								}
 							}
 						);

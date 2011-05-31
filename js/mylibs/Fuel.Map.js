@@ -6,7 +6,7 @@ Fuel.Map.prototype.load = function(mapCanvas, fuelPrices){
 	var mapOptions = {
         center: new google.maps.LatLng(-31.970804,115.856323),
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        zoom: 4
+        zoom: 15
       };
 
 	this.map = new google.maps.Map(mapCanvas, mapOptions);
@@ -20,7 +20,6 @@ Fuel.Map.prototype.load = function(mapCanvas, fuelPrices){
 }
 
 Fuel.Map.prototype.route = function(fromAddress, toAddress, distance, brands, vouchers, callback){
-	this.clearOverlays();
 	var self = this;
 	var callback = callback;
 	var request = {
@@ -35,38 +34,56 @@ Fuel.Map.prototype.route = function(fromAddress, toAddress, distance, brands, vo
 			self.directionsRenderer.setDirections(result);
 			var boxes = self.routeBoxer.box(result.routes[0].overview_path, distance);
 
-			callback(self.addOverlays(boxes, brands, vouchers));
+			callback(self.addStationMarkers(boxes, brands, vouchers));
 		}
 	});
 }
 
-Fuel.Map.prototype.addOverlays = function(boxes, brands, vouchers)
+/**
+ * 
+ * @boxes An array of LatLngBounds
+ */
+Fuel.Map.prototype.addStationMarkers = function(boxes, brands, vouchers)
 {
+ 	this.removeStationMarkers();
 	var stations = [];
 	
-	for (var i = 0; i < boxes.length; i++) {
-  		for (var j = 0; j < this.fuelPrices.stationList.length; j++) {
-			var station = this.fuelPrices.stationList[j];
-	
-			if( ($.inArray(station.brand, brands) > -1) && boxes[i].contains(station.latlng) )
-	  		{
-	  			stations.push(station);
-	  			if( vouchers[station.brand] !== undefined )
-	  			{
-	  				station.applyVoucher(vouchers[station.brand].amount)
-	  			}
-
-	  			var styleIcon = new StyledIcon(StyledIconTypes.BUBBLE,{color:"#ff0000",text:station.getPrice()});
-	    		var styleMaker1 = new StyledMarker({styleIcon:styleIcon,position:station.latlng,map:this.map});
-				this.markersArray.push(styleMaker1);
+	for (var j = 0; j < this.fuelPrices.stationList.length; j++) {
+		var station = this.fuelPrices.stationList[j];
+		var brandsCheck = true;
+		var boxesCheck = true;
+		
+		if( brands )
+		{
+			brandsCheck = false;
+			for (var i = 0; i < boxes.length; i++) {
+	  			if( ($.inArray(station.brand, brands) > -1) )
+				{
+					brandsCheck = true;
+					break;
+				}
 			}
+		
+		}
+				
+		if( brandsCheck && boxesCheck )
+  		{
+  			stations.push(station);
+  			if( vouchers && vouchers[station.brand] !== undefined )
+  			{
+  				station.applyVoucher(vouchers[station.brand].amount)
+  			}
+
+  			var styleIcon = new StyledIcon(StyledIconTypes.BUBBLE,{color:"#ff0000",text:station.getPrice()});
+    		var styleMaker1 = new StyledMarker({styleIcon:styleIcon,position:station.latlng,map:this.map});
+			this.markersArray.push(styleMaker1);
 		}
 	}
-	
+
 	return stations.sort(Fuel.Map.sortPrices);
 }
 
-Fuel.Map.prototype.clearOverlays = function()
+Fuel.Map.prototype.removeStationMarkers = function()
 {
 	for (marker in this.markersArray) {
 		this.markersArray[marker].setMap(null);
