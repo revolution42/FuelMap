@@ -21,13 +21,9 @@ vouchers.getSelected = function()
 {
 	var selectedVouchers = {};
 
-	$("option:selected", this).each(function () {
-		
-		     	
+	$("option:selected", this).each(function () {  	
 		
 		var voucher = fuelPrices.voucherList[$(this).val()];
-
-
 
 		if( selectedVouchers[voucher.brand] !== undefined )
 		{
@@ -104,7 +100,9 @@ $(document).ready(function()
 					{
 						var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-						fuelMap.addStationMarkers([Fuel.Map.createBoxAroundPoint(userLocation, 5)]);
+						var stations = fuelMap.addStationMarkers([Fuel.Map.createBoxAroundPoint(userLocation, 5)]);
+						createSideListStations(stations);
+						
 						fuelMap.map.setCenter(userLocation);
 						var marker = new google.maps.Marker({
 						      position: userLocation,
@@ -176,9 +174,13 @@ function route()
 		brands.getSelected(),
 		vouchers.getSelected(),
 		products.val(),
-		function(stationList)
-		{
-			var priceContainer = $("#stationList .content");	
+		createSideListStations
+	);
+}
+
+function createSideListStations(stationList)
+{
+	var priceContainer = $("#stationList .content");	
 			priceContainer.empty();
 			$("#controls").hide("slide", { direction: "left" }, 1000);
 			$.each( stationList, function(i, station)
@@ -192,7 +194,4 @@ function route()
 					fuelMap.map.setZoom(15);
 				});
 			})
-		}
-		
-	);
 }
