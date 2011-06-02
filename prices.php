@@ -134,12 +134,15 @@ $stationList = array();
 
 foreach( $regionArray as $regionId )
 {
-	echo "Getting region: " . $regionId . "\n";
+	echo "Getting region: " . $regionId . "<br />";
+	
 	foreach( $types as $typeId )
 	{
-		echo "\tType: " + $typeId;
+		echo $typeId;
 		getStationFromXml($regionId, $stationList, $typeId);
 	}
+	echo "<br /><br />";
+
 }
 $values = array_values($stationList);
 
@@ -147,4 +150,5 @@ $myFile = "data/prices.js";
 $fh = fopen($myFile, 'w') or die("can't open file");
 fwrite($fh, json_encode($values));
 fclose($fh);
+
 
