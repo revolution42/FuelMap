@@ -59,9 +59,9 @@ $(document).ready(function()
 			brands.append('<option value="' + i + '" selected="selected">' +  priceList.brandList[i] + '</option>');
 		};
 		
-		for ( var product in priceList.products )
+		for ( var productCode in priceList.products )
 		{
-			products.append('<option value="' + priceList.products[product] + '">' + product + '</option>');
+			products.append('<option value="' + productCode + '">' + priceList.products[productCode] + '</option>');
 		}
 		
 		for (var i=0; i < priceList.voucherList.length; i++) {
@@ -104,13 +104,13 @@ $(document).ready(function()
 					{
 						var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-						fuelMap.addStationMarkers();
+						//fuelMap.addStationMarkers();
 						fuelMap.map.setCenter(userLocation);
 						var marker = new google.maps.Marker({
 						      position: userLocation,
 						      title:"Your Location"
 						  });
-						  marker.setMap(fuelMap.map);  
+						  marker.setMap(fuelMap.map); 
 						
 						
 
@@ -175,6 +175,7 @@ function route()
 		parseFloat($( "#distance" ).slider( "value" )),
 		brands.getSelected(),
 		vouchers.getSelected(),
+		products.val(),
 		function(stationList)
 		{
 			var priceContainer = $("#stationList .content");	
@@ -182,7 +183,7 @@ function route()
 			$("#controls").hide("slide", { direction: "left" }, 1000);
 			$.each( stationList, function(i, station)
 			{
-				var stationObj = $("<a class='station ui-button ui-widget ui-state-default ui-corner-all ui-state-hover'>" + station.getPrice() + "<br/>" + station.tradingName + "</a>");
+				var stationObj = $("<a class='station ui-button ui-widget ui-state-default ui-corner-all ui-state-hover'>" + station.getPrice(products.val()) + "<br/>" + station.tradingName + "</a>");
 				
 				priceContainer.append(stationObj);
 				stationObj.click(function()

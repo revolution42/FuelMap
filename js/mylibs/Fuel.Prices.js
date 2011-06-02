@@ -6,79 +6,43 @@ Fuel.Prices = function (onComplete)
 Fuel.Prices.prototype.load = function(onComplete)
 {
 	var self = this;
+	self.stationList = [];
+	self.brandList = [];
+	self.brandMap = {};
 	
-	this.getPricesXml(function(fuelPriceXml)
-	{	
-		self.stationList = [];
-		self.brandList = [];
-		self.brandMap = {};
-
-		$(fuelPriceXml).find('item').each(function()
-		{
-			var station = Fuel.Station.loadFromXml(this);
+	$.getJSON(this.url, function(data)
+	{
+		for (var i=0; i < data.length; i++) {
+			var station = new Fuel.Station(data[i]);
 			self.stationList.push(station);
-			
+		
 			if( !$.isArray( self.brandMap[station.brand] ) )
 			{
 				self.brandMap[station.brand] = [];
 			}
 		
 			self.brandMap[station.brand].push(station);
-			
-		});
-			
+		};
+		
 		for ( var brand in self.brandMap )
 		{
 			self.brandList.push(brand);
 		}
 
 		onComplete(self);
-	});		
+	});
+	
 };
 
-Fuel.Prices.prototype.getPricesXml = function(callback)
-{
-	var currentTime = new Date()
-	var dateString = currentTime.getFullYear() + "-" +  (currentTime.getMonth() + 1) + "-" +  currentTime.getDate();
-	
-	// Check to see if its stored locally first
-	if (Modernizr.localstorage) {
-		if( localStorage['priceXmlDate'] == dateString )
-		{
-			callback(localStorage['priceXml']);
-			return;
-		}
-		localStorage['priceXmlDate'] = null;
-	  	localStorage['priceXml'] = null;
-	}
-	
-	
-	var self = this;
-	$.ajax({
-		type: "GET",
-		url: this.url,
-		data:{'Product':2},
-		dataType: "text",
-		success: function(result) {
-			// Store the result locally
-			if (Modernizr.localstorage) {			
-				localStorage['priceXmlDate'] = dateString;
-			  	localStorage['priceXml'] = result.toString();
-			}
-			callback(result);
-		}
-	});
-}
-
-Fuel.Prices.prototype.url = "prices.php";
+Fuel.Prices.prototype.url = "/data/prices.js";
 
 Fuel.Prices.prototype.products = {
-	"Unleaded Petrol": 1,
-	"Premium Unleaded": 2,
-	"Diesel": 4,
-	"LPG": 5,
-	"98 RON": 6,
-	"B20 diesel": 7
+	1: "Unleaded Petrol",
+	2: "Premium Unleaded",
+	4: "Diesel",
+	5: "LPG",
+	6: "98 RON",
+	7: "B20 diesel"
 };
 
 Fuel.Prices.prototype.voucherList = [
