@@ -1,3 +1,4 @@
+
 Fuel.Map = function(mapCanvas, fuelPrices){
 	this.load(mapCanvas, fuelPrices);
 }
@@ -47,7 +48,7 @@ Fuel.Map.prototype.addStationMarkers = function(boxes, brands, vouchers, fuelTyp
 {
  	this.removeStationMarkers();
 	var stations = [];
-	
+
 	for (var j = 0; j < this.fuelPrices.stationList.length; j++) {
 		var station = this.fuelPrices.stationList[j];
 		var brandsCheck = true;
@@ -110,4 +111,30 @@ Fuel.Map.prototype.removeStationMarkers = function()
 
 Fuel.Map.sortPrices = function(a, b){
 	return (a.getPrice() - b.getPrice())
+}
+
+Fuel.Map.createBoxAroundPoint = function(latlng, distance)
+{
+	var ne = Fuel.Map.findPoint(latlng.lat(),latlng.lng(),45,distance/2);
+    var sw = Fuel.Map.findPoint(latlng.lat(),latlng.lng(),225,distance/2);
+
+    return new google.maps.LatLngBounds (sw, ne);
+}
+
+/**
+ * brng is the direction
+ * dist is the distance
+ */
+Fuel.Map.findPoint = function(lat,lng,brng, dist) {
+    this._radius = 6371;
+    dist = typeof(dist) == 'number' ? dist : typeof(dist) == 'string' && dist.trim() != '' ? +dist : NaN;
+    dist = dist / this._radius;
+    brng = brng.toRad();  
+    var lat1 = lat.toRad(),
+        lon1 = lng.toRad();
+
+    var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
+    var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat1), Math.cos(dist) - Math.sin(lat1) * Math.sin(lat2));
+    lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+    return new google.maps.LatLng(lat2.toDeg(),lon2.toDeg());
 }

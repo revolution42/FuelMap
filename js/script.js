@@ -104,7 +104,7 @@ $(document).ready(function()
 					{
 						var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-						//fuelMap.addStationMarkers();
+						fuelMap.addStationMarkers([Fuel.Map.createBoxAroundPoint(userLocation, 5)]);
 						fuelMap.map.setCenter(userLocation);
 						var marker = new google.maps.Marker({
 						      position: userLocation,
