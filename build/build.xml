@@ -442,17 +442,27 @@
     </target>
     
     
-    <!-- JAVASCRIPT -->
+    
+    
+    
+    
+      <!-- JAVASCRIPT -->
     <target name="-js.main.concat" depends="-load-build-info" description="(PRIVATE) Concatenates the JS files in dir.js">
         <echo message="Concatenating Main JS scripts..."/>
         <concat destfile="./${dir.publish}/${dir.js}/scripts-${build.number}.js">
-            <fileset dir="./${dir.publish}/">
-                <include name="**/${dir.js.main}/*.min.js"/>
-                <exclude name="**/${dir.js.mylibs}/*.js"/>
-                <exclude name="**/${dir.js.libs}/*.js"/>
-            </fileset>      
+			<fileset file="./${dir.publish}/${dir.js}/RouteBoxer.js" />
+			<fileset file="./${dir.publish}/${dir.js}/StyledMarker.js" />
+			<fileset file="./${dir.publish}/${dir.js}/Fuel.js" />
+			<fileset file="./${dir.publish}/${dir.js}/Fuel.Prices.js" />
+			<fileset file="./${dir.publish}/${dir.js}/Fuel.Map.js" />
+			<fileset file="./${dir.publish}/${dir.js}/Fuel.Station.js" />
+			<fileset file="./${dir.publish}/${dir.js}/jquery.multiselect.min.js" />
+			<fileset file="./${dir.publish}/${dir.js}/plugins.js" />
+			<fileset file="./${dir.publish}/${dir.js}/script.js" />
         </concat>
     </target>
+    <!-- JAVASCRIPT -->
+    
     
     
     <target name="-js.mylibs.concat" depends="-load-build-info" description="(PRIVATE) Concatenates the JS files in dir.js.mylibs">

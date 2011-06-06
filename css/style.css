@@ -168,77 +168,104 @@ a:hover { color: #036; }
  * Author: 
  */
 
-
-body, html
-{
-	height: 100%;
-}
-
-body
-{
-	padding-left: 300px;
-}
-
-#controls, #stationList
-{
-	float: left;
-	width: 279px;
-	position: absolute;
-	left: 0px;
-	overflow: hidden;
-	padding: 0px 10px;
-	top: 0px;
-	bottom: 0px;
-	border-right: 1px solid black;
-	background: #fff;
-	height: 100%;
-}
-
 #map
 {
-	height: 100%;
 	width: 100%;
+	height: 100%;
 }
 
-.page
+#mapContainer .full
 {
 	height: 100%;
 	width: 100%;
+	padding: 0px;
+	margin: 0px;
 }
 
-.label
+#mapContainer
+{
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	left: 0px;
+	position: absolute;
+		height: auto;
+	width: auto;
+	min-height: 0;
+	padding: 0px;
+}
+
+
+/**
+ * Large interface
+ */
+ 
+.large .side
+{
+	height: 100%;
+	overflow: hidden;
+}
+
+.large .side .ui-content
+{
+	width: 275px;
+}
+
+.large #searchPage .ui-content
+{
+	padding-top: 30px;
+}
+
+.large #mapContainer
 {
 	display: block;
-	padding: 15px 0px 2px 0px;
-	font-size: 1.2em;
+	left: 306px;
+	border-left: 1px solid black;
+
+}
+
+.large #map
+{
+	top: 50px;
+}
+
+
+.large label
+{
+	display: block !important;
 	font-weight: bold;
+
+	padding-left: 5px;
 }
 
-#toAddress, #fromAddress
+.large label
 {
-	padding: 5px;
-	width: 250px;
+	width: 80% !important;
 }
 
-
-#search
+.large .ui-select
 {
-	margin-top: 15px;
-	float: right;
-	margin-right: 15px;
+	width: 100% !important;
+	
 }
 
-.station
+.large .ui-input-search
 {
-	width: 100%;
-	margin: 5px 0px;
+	width: 77%  !important;
 }
 
-.back
+.large #scrollContent
 {
-	margin-top: 10px;
-
+	height: 100%;
+	min-height: 0;
+	overflow: hidden;
 }
+
+.large #mapContainer .ui-header
+{
+	display: none;
+}
+
 
 
 .ui-multiselect { padding:2px 0 2px 4px; text-align:left }
@@ -314,10 +341,13 @@ body
 
 }
 
+
+
+
 /* Grade-A Mobile Browsers (Opera Mobile, Mobile Safari, Android Chrome)
    consider this: www.cloudfour.com/css-media-query-for-mobile-is-fools-gold/ */
 @media screen and (max-device-width: 480px) {
-
+	
 
   /* Uncomment if you don't want iOS and WinMobile to mobile-optimize the text for you: j.mp/textsizeadjust */
   /* html { -webkit-text-size-adjust:none; -ms-text-size-adjust:none; } */

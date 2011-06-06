@@ -1,3 +1,35 @@
+// Set the hash to nothing for page load. We want the user to always start in the same place.
+window.location.hash = "";
+
+$(document).ready(function()
+{
+	//new iScroll('wrapper');
+	
+	applyWidth();
+	
+	$(window).resize(applyWidth);
+	
+	function applyWidth()
+	{
+		$("#results").height($('#mapContainer').height() -75);
+		
+		$('#mapContainer').height('auto');
+		$('#mapContainer .full').height($('#mapContainer').height() -50);
+		$('html').removeClass("small").removeClass("large");
+
+		if( $(window).width() < 600 )
+		{
+			$('html').addClass("small");
+		}
+		else
+		{
+			$('html').addClass("large");
+			
+		}
+	}
+});
+
+
 var fuelMap;
 var fuelPrices;
 var brands = $('#brands');
@@ -48,6 +80,7 @@ vouchers.getSelected = function()
 	
 $(document).ready(function()
 {
+	
 
 	fuelPrices = new Fuel.Prices(function(priceList)
 	{
@@ -65,31 +98,6 @@ $(document).ready(function()
 		};
 		
 		fuelMap = new Fuel.Map(document.getElementById("map"), priceList);
-		
-		brands.multiselect({
-			height: 'auto'
-		});
-		
-		vouchers.multiselect({
-			height: 'auto'
-		});
-		
-		products.multiselect({
-			multiple: false,
-			height: 'auto'
-		});
-		
-		distance.slider({
-			value:1,
-			min: 0,
-			max: 10,
-			step: 0.5,
-			slide: function( event, ui ) {
-				
-			$( "#amount" ).html( ui.value );
-			}
-		});
-		$( "#amount" ).html(distance.slider( "value" ) );
 		
 		if( typeof navigator.geolocation != 'undefined' )
 		{
@@ -109,7 +117,7 @@ $(document).ready(function()
 						      title:"Your Location"
 						  });
 						  marker.setMap(fuelMap.map); 
-						
+						$.mobile.changePage("#results");
 						
 
 						var geocoder = new google.maps.Geocoder();
@@ -127,7 +135,8 @@ $(document).ready(function()
 					},
 					function(error)
 					{
-						alert(error.code + ': ' + error.message);
+						// @TODO Give a nice message to users that have location disabled
+						//alert(error.code + ': ' + error.message);
 					}
 				);
 			}
@@ -135,12 +144,16 @@ $(document).ready(function()
 			{
 			}
 		}
+		
+		$('select').selectmenu("refresh");
 	});
+	
+	
 	
 	search.click(function()
 	{
 		route();
-		return false;
+		//return false;
 	});
 	
 	search.button({
@@ -150,17 +163,37 @@ $(document).ready(function()
         });
 	
 
-	var back = $(".back");
-	back.button({
-            icons: {
-                primary: "ui-icon-circle-arrow-w"
-            }
-        });
 
-	back.click(function()
-	{
-		$("#controls").show("slide", { direction: "left" }, 1000);
-	});
+	
+	/*
+	if (!Modernizr.touch){
+	
+		brands.multiselect({
+			height: 'auto'
+		});
+		
+		vouchers.multiselect({
+			height: 'auto'
+		});
+		
+		products.multiselect({
+			multiple: false,
+			height: 'auto'
+		});
+	}*/
+		
+	/*	distance.slider({
+			value:1,
+			min: 0,
+			max: 10,
+			step: 0.5,
+			slide: function( event, ui ) {
+				
+			$( "#amount" ).html( ui.value );
+			}
+		});
+		$( "#amount" ).html(distance.slider( "value" ) );*/
+	
 
 });
 
@@ -170,7 +203,7 @@ function route()
 	fuelMap.route(
 		document.getElementById("fromAddress").value,
 		document.getElementById("toAddress").value,
-		parseFloat($( "#distance" ).slider( "value" )),
+		2,/* @TODO uses the slider values */
 		brands.getSelected(),
 		vouchers.getSelected(),
 		products.val(),
@@ -180,18 +213,35 @@ function route()
 
 function createSideListStations(stationList)
 {
-	var priceContainer = $("#stationList .content");	
+
+	var priceContainer = $("#resultView");	
 			priceContainer.empty();
-			$("#controls").hide("slide", { direction: "left" }, 1000);
+			//$("#controls").hide("slide", { direction: "left" }, 1000);
 			$.each( stationList, function(i, station)
 			{
-				var stationObj = $("<a class='station ui-button ui-widget ui-state-default ui-corner-all ui-state-hover'>" + station.getPrice(products.val()) + "<br/>" + station.tradingName + "</a>");
+				var stationObj = $("<li><a><h3>" + station.getPrice(products.val()) + "</h3><p>" + station.tradingName + "</p></a></li>");
 				
 				priceContainer.append(stationObj);
 				stationObj.click(function()
 				{
+					if( $("html").hasClass('small') )
+					{
+						$.mobile.changePage("#mapContainer");
+						 google.maps.event.trigger(fuelMap.map, 'resize');
+					}
+					
 					fuelMap.map.setCenter(station.latlng);
 					fuelMap.map.setZoom(15);
 				});
-			})
+			});
+	
+	try
+	{
+		priceContainer.listview('refresh');
+	}
+	catch( ex )
+	{
+		
+	}
+
 }
