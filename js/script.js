@@ -14,7 +14,7 @@ $(document).ready(function()
 		$("#results").height($('#mapContainer').height() -75);
 		
 		$('#mapContainer').height('auto');
-		$('#mapContainer .full').height($('#mapContainer').height() -50);
+		$('#mapContainer .full').height($('#mapContainer').height() -42);
 		$('html').removeClass("small").removeClass("large");
 
 		if( $(window).width() < 600 )
@@ -228,8 +228,11 @@ function createSideListStations(stationList)
 					{
 						$.mobile.changePage("#mapContainer");
 						 google.maps.event.trigger(fuelMap.map, 'resize');
+						
 					}
-					
+
+
+					 $("#resultView li").removeClass('ui-btn-active');
 					fuelMap.map.setCenter(station.latlng);
 					fuelMap.map.setZoom(15);
 				});

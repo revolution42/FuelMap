@@ -35,7 +35,7 @@
 
 <div class="side">
 	<!-- Start of first page -->
-	<div data-role="page" data-fullscreen="true" id="searchPage">
+	<div data-role="page" data-fullscreen="true" id="searchPage" data-theme="b" >
 	
 		<div data-role="header" data-backbtn="false">
 			<h1>Fuelmap</h1>
@@ -44,32 +44,32 @@
 		<div data-role="content">
 			<div data-role="fieldcontain"> 
 				<label class="label" for="brands">Brand</label>
-				<select id="brands" multiple="multiple" data-native-menu="false"></select>
+				<select id="brands" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
 			</div> 
 			
 			<div data-role="fieldcontain"> 
 				<label class="label" for="vouchers">Vouchers</label>
-				<select id="vouchers" multiple="multiple" data-native-menu="false"></select>
+				<select id="vouchers" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
 			</div> 
 			
 			<div data-role="fieldcontain"> 
-				<label class="label" for="products">Product</label>
-				<select id="products" data-native-menu="false" ></select>
+				<label class="label" for="products" >Product</label>
+				<select id="products" data-native-menu="false"  data-theme="d"></select>
 			</div>
 			
 			<div data-role="fieldcontain"> 
 				<label class="label" for="fromAddress">From:</label>
-				<input type="search" name="fromAddress" id="fromAddress" value="perth, wa" />
+				<input type="search" name="fromAddress" id="fromAddress" value="perth, wa"  data-theme="d" />
 			</div>
 			
 			<div data-role="fieldcontain"> 
 				<label  class="label" for="toAddress">To:</label>
-				<input type="search" name="toAddress" id="toAddress" value="bunbury, wa" />
+				<input type="search" name="toAddress" id="toAddress" value="bunbury, wa" data-theme="d" />
 			</div>
 			
 			<div data-role="fieldcontain"> 
 				<label  class="label" for="toAddress">Within kilometers:</label>
-				<input type="range" name="slider" id="distance" value="2" min="0" max="10"  />
+				<input type="range" name="slider" id="distance" value="2" min="0" max="10" data-theme="d"  />
 			</div>
 			
 			<a id="search" href="#results">Search</a> 
@@ -82,10 +82,10 @@
 	
 	
 	<!-- Start of second page -->
-	<div data-role="page" id="results"  data-position="fixed">
+	<div data-role="page" id="results"  data-position="fixed" data-theme="b" >
 	
 		<div data-role="header" data-backbtn="false">
-			<a href="#searchPage" data-role="button">Search</a>
+			<a href="#searchPage" data-role="button"  data-theme="d">Search</a>
 			<h1>Fuelmap</h1>
 		</div><!-- /header -->
 	
@@ -98,7 +98,7 @@
 
 
 
-<div data-role="page" id="mapContainer">
+<div data-role="page" id="mapContainer" data-theme="b" >
 
 	<div data-role="header" class="ui-header">
 		<h1>Fuelmap</h1>
