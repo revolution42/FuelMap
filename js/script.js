@@ -12,7 +12,7 @@ $(document).ready(function()
 		$("#results").height($('#mapContainer').height() -75);
 		
 		$('#mapContainer').height('auto');
-		$('#mapContainer .full').height($('#mapContainer').height() -42);
+		$('#mapContainer .full').height($('#mapContainer').height() - 42);
 		$('html').removeClass("small").removeClass("large");
 
 		if( $(window).width() < 600 )
@@ -27,76 +27,143 @@ $(document).ready(function()
 	}
 });
 
-
-var fuelMap;
-var fuelPrices;
-var brands = $('#brands');
-var vouchers = $('#vouchers');
-	var products = $('#products');
-	var distance = $( "#distance" );
-	var search = $("#search");
-	
-brands.getSelected = function()
+$('body').bind("priceLoad", function()
 {
-	var selectedArray = [];
+	// Declare variables	
+	var priceList = Fuel.Prices,
+		fuelMap = new Fuel.Map(document.getElementById("map"), priceList),
+		brands = $('#brands'),
+		vouchers = $('#vouchers'),
+		products = $('#products'),
+		distance = $( "#distance" ),
+		search = $("#search");
+	
+	// Populate dropdowns
+	for (var i=0; i < priceList.brandList.length; i++) {
+		brands.append('<option value="' + i + '" selected="selected">' +  priceList.brandList[i] + '</option>');
+	};
+	
+	for ( var productCode in priceList.products )
+	{
+		products.append('<option value="' + productCode + '">' + priceList.products[productCode] + '</option>');
+	}
+	
+	for (var i=0; i < priceList.voucherList.length; i++) {
+		vouchers.append('<option value="' + i + '">' +  priceList.voucherList[i].title + '</option>');
+	};
+	$('select').selectmenu("refresh");
+	
 
-	$("option:selected", this).each(function () {
-        selectedArray.push($(this).text());
 
+	// Setup helper functions for dropdowns
+	brands.getSelected = function()
+	{
+		var selectedArray = [];
+	
+		$("option:selected", this).each(function () {
+	        selectedArray.push($(this).text());
+	
+		});
+		
+		return selectedArray;
+	};
+	vouchers.getSelected = function()
+	{
+		var selectedVouchers = {};
+	
+		$("option:selected", this).each(function () {  	
+			
+			var voucher = fuelPrices.voucherList[$(this).val()];
+	
+			if( selectedVouchers[voucher.brand] !== undefined )
+			{
+				if( selectedVouchers[voucher.brand].amount < voucher.amount )
+				{
+	
+					selectedVouchers[voucher.brand] = voucher;
+				}
+			}
+			else
+			{
+				
+	        	selectedVouchers[voucher.brand] = voucher;
+	   
+	       	}
+	
+		});
+	
+		return selectedVouchers;
+	};
+	
+	// Setup onclicks for search
+	search.click(function()
+	{
+		fuelMap.route(
+			$("#fromAddress").val(),
+			$("#toAddress").val(),
+			2,/* @TODO uses the slider values */
+			brands.getSelected(),
+			vouchers.getSelected(),
+			products.val(),
+			createSideListStations
+		);
+		return false;
 	});
 	
-	return selectedArray;
-};
-vouchers.getSelected = function()
-{
-	var selectedVouchers = {};
+	doGeolocation();
+	$('#loader').remove();
+	//
+	// FUNCTIONS
+	// ---------------------------------------------------------------
+	//
 
-	$("option:selected", this).each(function () {  	
-		
-		var voucher = fuelPrices.voucherList[$(this).val()];
 
-		if( selectedVouchers[voucher.brand] !== undefined )
+	/**
+	 * Create the html for the sidelist.
+	 * @param stationList A list of stations
+	 */
+	function createSideListStations(stationList)
+	{
+	
+		var priceContainer = $("#resultView");	
+		priceContainer.empty();
+	
+		$.each( stationList, function(i, station)
 		{
-			if( selectedVouchers[voucher.brand].amount < voucher.amount )
+			var stationObj = $("<li><a><h3>" + station.getPrice(products.val()) + "</h3><p>" + station.tradingName + "</p></a></li>");
+			
+			priceContainer.append(stationObj);
+			stationObj.click(function()
 			{
-
-				selectedVouchers[voucher.brand] = voucher;
-			}
+				if( $("html").hasClass('small') )
+				{
+					$.mobile.changePage("#mapContainer");
+					 google.maps.event.trigger(fuelMap.map, 'resize');
+				}
+	
+				$("#resultView li").removeClass('ui-btn-active');
+				fuelMap.map.setCenter(station.latlng);
+				fuelMap.map.setZoom(15);
+			});
+		});
+	
+		// TODO Find a nicer solution for this, sometimes the pricecontainer hasn't been fully initialised before its been populated by this function.
+		try
+		{
+			priceContainer.listview('refresh');
 		}
-		else
+		catch( ex )
 		{
 			
-        	selectedVouchers[voucher.brand] = voucher;
-   
-       	}
-
-	});
-
-	return selectedVouchers;
-};
-
-	
-$(document).ready(function()
-{
-	
-
-	fuelPrices = new Fuel.Prices(function(priceList)
-	{
-		for (var i=0; i < priceList.brandList.length; i++) {
-			brands.append('<option value="' + i + '" selected="selected">' +  priceList.brandList[i] + '</option>');
-		};
-		
-		for ( var productCode in priceList.products )
-		{
-			products.append('<option value="' + productCode + '">' + priceList.products[productCode] + '</option>');
 		}
-		
-		for (var i=0; i < priceList.voucherList.length; i++) {
-			vouchers.append('<option value="' + i + '">' +  priceList.voucherList[i].title + '</option>');
-		};
-		
-		fuelMap = new Fuel.Map(document.getElementById("map"), priceList);
-		
+	}
+	
+	/**
+	 * Check to see if geolocation is supported.
+	 * Centre the map on users location.
+	 */
+	function doGeolocation()
+	{
 		if( typeof navigator.geolocation != 'undefined' )
 		{
 			try
@@ -115,7 +182,7 @@ $(document).ready(function()
 						      title:"Your Location"
 						  });
 						  marker.setMap(fuelMap.map); 
-						$.mobile.changePage("#results");
+						$.mobile.changePage("#results", 'none');
 						
 
 						var geocoder = new google.maps.Geocoder();
@@ -142,73 +209,5 @@ $(document).ready(function()
 			{
 			}
 		}
-		
-		$('select').selectmenu("refresh");
-	});
-	
-	
-	
-	search.click(function()
-	{
-		route();
-		//return false;
-	});
-	
-	search.button({
-            icons: {
-                primary: "ui-icon-search"
-            }
-        });
+	}
 });
-
-
-function route()
-{
-	fuelMap.route(
-		document.getElementById("fromAddress").value,
-		document.getElementById("toAddress").value,
-		2,/* @TODO uses the slider values */
-		brands.getSelected(),
-		vouchers.getSelected(),
-		products.val(),
-		createSideListStations
-	);
-}
-
-function createSideListStations(stationList)
-{
-
-	var priceContainer = $("#resultView");	
-			priceContainer.empty();
-
-			$.each( stationList, function(i, station)
-			{
-				var stationObj = $("<li><a><h3>" + station.getPrice(products.val()) + "</h3><p>" + station.tradingName + "</p></a></li>");
-				
-				priceContainer.append(stationObj);
-				stationObj.click(function()
-				{
-					if( $("html").hasClass('small') )
-					{
-						$.mobile.changePage("#mapContainer");
-						 google.maps.event.trigger(fuelMap.map, 'resize');
-						
-					}
-
-
-					 $("#resultView li").removeClass('ui-btn-active');
-					fuelMap.map.setCenter(station.latlng);
-					fuelMap.map.setZoom(15);
-				});
-			});
-	
-	try
-	{
-		priceContainer.listview('refresh');
-	}
-	catch( ex )
-	{
-		
-	}
-
-}
