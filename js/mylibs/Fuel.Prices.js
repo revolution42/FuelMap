@@ -10,10 +10,13 @@ Fuel.Prices.prototype.load = function(onComplete)
 	self.brandList = [];
 	self.brandMap = {};
 	
-	$.getJSON(this.url, function(data)
+	$.getJSON(this.url, function(rtnData)
 	{
+		var data = rtnData.data;
+
 		for (var i=0; i < data.length; i++) {
 			var station = new Fuel.Station(data[i]);
+	
 			self.stationList.push(station);
 		
 			if( !$.isArray( self.brandMap[station.brand] ) )
@@ -28,13 +31,12 @@ Fuel.Prices.prototype.load = function(onComplete)
 		{
 			self.brandList.push(brand);
 		}
-
 		onComplete(self);
 	});
 	
 };
 
-Fuel.Prices.prototype.url = "/data/prices.js";
+Fuel.Prices.prototype.url = "/prices.js";
 
 Fuel.Prices.prototype.products = {
 	1: "Unleaded Petrol",

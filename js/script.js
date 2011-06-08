@@ -3,8 +3,6 @@ window.location.hash = "";
 
 $(document).ready(function()
 {
-	//new iScroll('wrapper');
-	
 	applyWidth();
 	
 	$(window).resize(applyWidth);
@@ -161,40 +159,6 @@ $(document).ready(function()
                 primary: "ui-icon-search"
             }
         });
-	
-
-
-	
-	/*
-	if (!Modernizr.touch){
-	
-		brands.multiselect({
-			height: 'auto'
-		});
-		
-		vouchers.multiselect({
-			height: 'auto'
-		});
-		
-		products.multiselect({
-			multiple: false,
-			height: 'auto'
-		});
-	}*/
-		
-	/*	distance.slider({
-			value:1,
-			min: 0,
-			max: 10,
-			step: 0.5,
-			slide: function( event, ui ) {
-				
-			$( "#amount" ).html( ui.value );
-			}
-		});
-		$( "#amount" ).html(distance.slider( "value" ) );*/
-	
-
 });
 
 
@@ -216,7 +180,7 @@ function createSideListStations(stationList)
 
 	var priceContainer = $("#resultView");	
 			priceContainer.empty();
-			//$("#controls").hide("slide", { direction: "left" }, 1000);
+
 			$.each( stationList, function(i, station)
 			{
 				var stationObj = $("<li><a><h3>" + station.getPrice(products.val()) + "</h3><p>" + station.tradingName + "</p></a></li>");
