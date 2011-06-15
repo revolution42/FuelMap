@@ -42,39 +42,49 @@
 		</div><!-- /header -->
 	
 		<div data-role="content">
-			<div data-role="fieldcontain"> 
-				<label class="label" for="brands">Brand</label>
-				<select id="brands" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
-			</div> 
 			
-			<div data-role="fieldcontain"> 
-				<label class="label" for="vouchers">Vouchers</label>
-				<select id="vouchers" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
-			</div> 
-			
-			<div data-role="fieldcontain"> 
-				<label class="label" for="products" >Product</label>
-				<select id="products" data-native-menu="false"  data-theme="d"></select>
+			<div id="addressList">
+				<div data-role="fieldcontain"> 
+					<label class="label" for="fromAddress">From:</label>
+					<input name="fromAddress" id="fromAddress" value=""  data-theme="d" />
+				</div>
 			</div>
 			
-			<div data-role="fieldcontain"> 
-				<label class="label" for="fromAddress">From:</label>
-				<input type="search" name="fromAddress" id="fromAddress" value="perth, wa"  data-theme="d" />
+			<hr />
+			
+			<div class="advanced">
+				<div data-role="fieldcontain"> 
+					<label class="label" for="brands">Brand</label>
+					<select id="brands" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
+				</div> 
+				
+				<div data-role="fieldcontain"> 
+					<label class="label" for="vouchers">Vouchers</label>
+					<select id="vouchers" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
+				</div> 
+				
+				<div data-role="fieldcontain"> 
+					<label class="label" for="products" >Product</label>
+					<select id="products" data-native-menu="false"  data-theme="d"></select>
+				</div>
+				
+				
+				
+				<div data-role="fieldcontain"> 
+					<label  class="label" for="toAddress">To:</label>
+					<input type="search" name="toAddress" id="toAddress" value="" data-theme="d" />
+				</div>
+				
+				<div data-role="fieldcontain"> 
+					<label  class="label" for="toAddress">Within kilometers:</label>
+					<input type="range" name="slider" id="distance" value="2" min="0" max="10" data-theme="d"  />
+				</div>
 			</div>
 			
-			<div data-role="fieldcontain"> 
-				<label  class="label" for="toAddress">To:</label>
-				<input type="search" name="toAddress" id="toAddress" value="bunbury, wa" data-theme="d" />
+			<div class="ui-grid-a">
+				<div class="ui-block-a"><a id="addDestination" href="#searchPage" data-role="button"  data-icon="plus" data-theme="d">Destination</a> </div>
+				<div class="ui-block-b"><a id="search" href="#results" data-role="button"  data-theme="d"  data-icon="search">Search</a> </div>
 			</div>
-			
-			<div data-role="fieldcontain"> 
-				<label  class="label" for="toAddress">Within kilometers:</label>
-				<input type="range" name="slider" id="distance" value="2" min="0" max="10" data-theme="d"  />
-			</div>
-			
-			<a id="search" href="#results" data-role="button"  data-theme="d">Search</a> 
-			
-
 		</div><!-- /content -->
 	
 	</div><!-- /page -->

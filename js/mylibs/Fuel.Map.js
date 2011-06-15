@@ -7,7 +7,8 @@ Fuel.Map.prototype.load = function(mapCanvas, fuelPrices){
 	var mapOptions = {
         center: new google.maps.LatLng(-31.970804,115.856323),
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        zoom: 15
+        zoom: 15,
+        mapTypeControl: false
       };
 
 	this.map = new google.maps.Map(mapCanvas, mapOptions);
@@ -20,18 +21,22 @@ Fuel.Map.prototype.load = function(mapCanvas, fuelPrices){
 	this.fuelPrices = fuelPrices;
 }
 
-Fuel.Map.prototype.route = function(fromAddress, toAddress, distance, brands, vouchers, fuelType, callback){
+Fuel.Map.prototype.route = function(addressList, distance, brands, vouchers, fuelType, callback){
+	this.clearMap();
+	
 	var self = this;
 	var callback = callback;
 	var request = {
-		origin: fromAddress,
-		destination: toAddress,
-		travelMode: google.maps.DirectionsTravelMode.DRIVING
+		origin: addressList[0].location,
+		destination: addressList[addressList.length-1].location,
+		travelMode: google.maps.DirectionsTravelMode.DRIVING,
+		waypoints: addressList.splice(1, addressList.length-2)
 	};
 	
 	// Make the directions request
 	this.directionService.route(request, function(result, status) {
 		if (status == google.maps.DirectionsStatus.OK) {
+			self.directionsRenderer.setMap(self.map);
 			self.directionsRenderer.setDirections(result);
 			var boxes = self.routeBoxer.box(result.routes[0].overview_path, distance);
 
@@ -99,6 +104,14 @@ Fuel.Map.prototype.addStationMarkers = function(boxes, brands, vouchers, fuelTyp
 	}
 
 	return stations.sort(Fuel.Map.sortPrices);
+}
+
+/**
+ * Clear all markers, routes etc from the map.
+ */
+Fuel.Map.prototype.clearMap = function(){
+	this.directionsRenderer.setMap(null);
+	this.removeStationMarkers();
 }
 
 Fuel.Map.prototype.removeStationMarkers = function()

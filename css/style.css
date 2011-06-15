@@ -170,9 +170,10 @@ a:hover { color: #036; }
 
 #map
 {
-	width: 100%;
-	height: 100%;
+	width: 1px;
+	height: 1px;
 }
+
 
 #mapContainer .full
 {
@@ -195,6 +196,17 @@ a:hover { color: #036; }
 	padding: 0px;
 }
 
+
+.advanced
+{
+	display: none;
+}
+
+.removeDestination 
+{
+	width: 17% !important;
+	margin-top: -3px !important;
+}
 
 /**
  * Large interface
@@ -227,6 +239,8 @@ a:hover { color: #036; }
 {
 	top: 42px;
 	border-left: 1px solid black;
+		width: 100%;
+	height: 100%;
 }
 
 

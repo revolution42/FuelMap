@@ -3,6 +3,11 @@ window.location.hash = "";
 
 $(document).ready(function()
 {
+	var iphone = false;
+	if( (navigator.userAgent.match(/iPhone/i)))  {
+		iphone = true;
+	}
+		
 	applyWidth();
 	
 	$(window).resize(applyWidth);
@@ -15,14 +20,14 @@ $(document).ready(function()
 		$('#mapContainer .full').height($('#mapContainer').height() - 42);
 		$('html').removeClass("small").removeClass("large");
 
-		if( $(window).width() < 600 )
+
+		if( $(window).width() < 600 || iphone)
 		{
 			$('html').addClass("small");
 		}
 		else
 		{
 			$('html').addClass("large");
-			
 		}
 	}
 });
@@ -36,6 +41,7 @@ $('body').bind("priceLoad", function()
 		vouchers = $('#vouchers'),
 		products = $('#products'),
 		distance = $( "#distance" ),
+		destination = $( "#addDestination" ),
 		search = $("#search");
 	
 	// Populate dropdowns
@@ -43,8 +49,7 @@ $('body').bind("priceLoad", function()
 		brands.append('<option value="' + i + '" selected="selected">' +  priceList.brandList[i] + '</option>');
 	};
 	
-	for ( var productCode in priceList.products )
-	{
+	for ( var productCode in priceList.products ){
 		products.append('<option value="' + productCode + '">' + priceList.products[productCode] + '</option>');
 	}
 	
@@ -56,8 +61,7 @@ $('body').bind("priceLoad", function()
 
 
 	// Setup helper functions for dropdowns
-	brands.getSelected = function()
-	{
+	brands.getSelected = function(){
 		var selectedArray = [];
 	
 		$("option:selected", this).each(function () {
@@ -67,8 +71,7 @@ $('body').bind("priceLoad", function()
 		
 		return selectedArray;
 	};
-	vouchers.getSelected = function()
-	{
+	vouchers.getSelected = function(){
 		var selectedVouchers = {};
 	
 		$("option:selected", this).each(function () {  	
@@ -94,19 +97,81 @@ $('body').bind("priceLoad", function()
 	
 		return selectedVouchers;
 	};
-	
+
 	// Setup onclicks for search
-	search.click(function()
-	{
-		fuelMap.route(
-			$("#fromAddress").val(),
-			$("#toAddress").val(),
-			2,/* @TODO uses the slider values */
-			brands.getSelected(),
-			vouchers.getSelected(),
-			products.val(),
-			createSideListStations
-		);
+	search.click(function(){
+		
+		if( $("#fromAddress").val().length > 0 )
+		{
+			$.mobile.pageLoading();
+			var destinations = $("input.newDestination");
+			
+			if( destinations.length == 0 )
+			{
+				singleSearch();
+			}
+			else
+			{
+				multiSearch();
+			}				
+		}
+
+		return false;
+		
+		function singleSearch() {
+			var address = $("#fromAddress").val();
+			var geocoder = new google.maps.Geocoder();
+			geocoder.geocode( { 'address': address}, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
+
+				    setSingleLocation(results[0].geometry.location);
+				    
+				} else {
+					console.log('location not found');
+					// TODO Nice message if nothing found
+				}
+			});	  
+		}
+		
+		function multiSearch()
+		{
+			var addressArray = [
+				{
+					location: $("#fromAddress").val()
+				}
+			];
+			
+			$("input.newDestination").each( function()
+			{
+				addressArray.push({
+					location: this.value
+				});
+			});
+			
+			fuelMap.route(
+				addressArray,
+				2,// @TODO uses the slider values 
+				brands.getSelected(),
+				vouchers.getSelected(),
+				products.val(),
+				
+				createSideListStations
+			);
+		}
+	});
+	
+	destination.click(function(){
+		var container = $('<div class="ui-field-contain ui-body ui-br"><label class="removeDestination"><a href="index.html" data-role="button" data-icon="delete" class="removeButton">&nbsp;</a></label></div>');
+		var button = $('<input value=""  data-theme="d" />');
+		$("#addressList").append(container.append(button));
+		$("a", container).button().click(function()
+		{
+			container.remove();
+			return false;
+		});
+		button.textinput();
+		button.addClass('newDestination');
+		
 		return false;
 	});
 	
@@ -124,27 +189,34 @@ $('body').bind("priceLoad", function()
 	 */
 	function createSideListStations(stationList)
 	{
-	
 		var priceContainer = $("#resultView");	
 		priceContainer.empty();
 	
 		$.each( stationList, function(i, station)
 		{
-			var stationObj = $("<li><a><h3>" + station.getPrice(products.val()) + "</h3><p>" + station.tradingName + "</p></a></li>");
-			
-			priceContainer.append(stationObj);
-			stationObj.click(function()
+			if( i < 10 )
 			{
-				if( $("html").hasClass('small') )
+				var stationObj = $("<li><a><h3>" + station.getPrice(products.val()) + "</h3><p>" + station.tradingName + "</p></a></li>");
+				
+				priceContainer.append(stationObj);
+				stationObj.click(function()
 				{
-					$.mobile.changePage("#mapContainer");
-					 google.maps.event.trigger(fuelMap.map, 'resize');
-				}
-	
-				$("#resultView li").removeClass('ui-btn-active');
-				fuelMap.map.setCenter(station.latlng);
-				fuelMap.map.setZoom(15);
-			});
+					if( $("html").hasClass('small') )
+					{
+						$.mobile.pageLoading();
+						$.mobile.changePage("#mapContainer");
+						$("#map").css({
+							width: '100%',
+							height: '100%'
+						});
+						google.maps.event.trigger(fuelMap.map, 'resize');
+					}
+		
+					$("#resultView li").removeClass('ui-btn-active');
+					fuelMap.map.setCenter(station.latlng);
+					fuelMap.map.setZoom(15);
+				});
+			}
 		});
 	
 		// TODO Find a nicer solution for this, sometimes the pricecontainer hasn't been fully initialised before its been populated by this function.
@@ -156,6 +228,24 @@ $('body').bind("priceLoad", function()
 		{
 			
 		}
+		
+			$.mobile.changePage("#results", 'none');	
+	}
+	
+	function setSingleLocation(latlng)
+	{
+		fuelMap.clearMap();
+		
+		var stations = fuelMap.addStationMarkers([Fuel.Map.createBoxAroundPoint(latlng, 5)]);
+		createSideListStations(stations);
+
+		fuelMap.map.setCenter(latlng);
+		var marker = new google.maps.Marker({
+		      position: latlng,
+		      title:"Your Location"
+		  });
+		  marker.setMap(fuelMap.map); 
+			
 	}
 	
 	/**
@@ -172,18 +262,7 @@ $('body').bind("priceLoad", function()
 					function(position)
 					{
 						var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-						var stations = fuelMap.addStationMarkers([Fuel.Map.createBoxAroundPoint(userLocation, 5)]);
-						createSideListStations(stations);
-						
-						fuelMap.map.setCenter(userLocation);
-						var marker = new google.maps.Marker({
-						      position: userLocation,
-						      title:"Your Location"
-						  });
-						  marker.setMap(fuelMap.map); 
-						$.mobile.changePage("#results", 'none');
-						
+						setSingleLocation(userLocation);
 
 						var geocoder = new google.maps.Geocoder();
 						geocoder.geocode({latLng: userLocation},
