@@ -6,6 +6,7 @@
 <!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
 
   <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
        Remove this if you use the .htaccess -->
@@ -33,52 +34,25 @@
 
 <body>
 
+
+
 <div class="side">
+	
 	<!-- Start of first page -->
-	<div data-role="page" data-fullscreen="true" id="searchPage" data-theme="b" >
+	<div data-role="page"  id="searchPage" data-theme="b" >
 	
 		<div data-role="header" data-backbtn="false">
+			<a href="#settings" data-role="button" data-icon="gear" data-theme="d">Settings</a>
 			<h1>Fuelmap</h1>
 		</div><!-- /header -->
 	
 		<div data-role="content">
-			
-			<div id="addressList">
-				<div data-role="fieldcontain"> 
+			<div data-role="fieldcontain"> 
 					<label class="label" for="fromAddress">From:</label>
 					<input name="fromAddress" id="fromAddress" value=""  data-theme="d" />
 				</div>
-			</div>
-			
-			<hr />
-			
-			<div class="advanced">
-				<div data-role="fieldcontain"> 
-					<label class="label" for="brands">Brand</label>
-					<select id="brands" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
-				</div> 
+			<div id="addressList">
 				
-				<div data-role="fieldcontain"> 
-					<label class="label" for="vouchers">Vouchers</label>
-					<select id="vouchers" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
-				</div> 
-				
-				<div data-role="fieldcontain"> 
-					<label class="label" for="products" >Product</label>
-					<select id="products" data-native-menu="false"  data-theme="d"></select>
-				</div>
-				
-				
-				
-				<div data-role="fieldcontain"> 
-					<label  class="label" for="toAddress">To:</label>
-					<input type="search" name="toAddress" id="toAddress" value="" data-theme="d" />
-				</div>
-				
-				<div data-role="fieldcontain"> 
-					<label  class="label" for="toAddress">Within kilometers:</label>
-					<input type="range" name="slider" id="distance" value="2" min="0" max="10" data-theme="d"  />
-				</div>
 			</div>
 			
 			<div class="ui-grid-a">
@@ -90,12 +64,49 @@
 	</div><!-- /page -->
 	
 	
+	<div data-role="page" id="settings" data-theme="b" >
+
+	<div data-role="header" class="ui-header"  data-backbtn="false">
+		<a href="#searchPage" data-role="button"  data-icon="back" data-theme="d">Back</a>
+		<h1>Fuelmap</h1>
+	</div>
+
+	<div data-role="content">	
+		<div data-role="fieldcontain"> 
+			<label class="label" for="brands">Brand</label>
+			<select id="brands" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
+		</div> 
+		
+		<div data-role="fieldcontain"> 
+			<label class="label" for="vouchers">Vouchers</label>
+			<select id="vouchers" multiple="multiple" data-native-menu="false"  data-theme="d"></select>
+		</div> 
+		
+		<div data-role="fieldcontain"> 
+			<label class="label" for="products" >Product</label>
+			<select id="products" data-native-menu="false"  data-theme="d"></select>
+		</div>
+		
+		<div data-role="fieldcontain"> 
+			<label  class="label ui-select" for="toAddress">Within kilometers:</label>
+			<input type="range" name="slider" id="distance" min="0" max="10" data-theme="d"  />
+		</div>
+		
+		<div data-role="fieldcontain"> 
+		<a id="saveSettings" href="#searchPage" data-role="button" data-icon="check" data-icon="plus" data-theme="d">Save</a>
+		</div>
+	</div>
+</div>
+	
+	
+	
+	
 	
 	<!-- Start of second page -->
 	<div data-role="page" id="results"  data-position="fixed" data-theme="b" >
 	
 		<div data-role="header" data-backbtn="false">
-			<a href="#searchPage" data-role="button"  data-theme="d">Search</a>
+			<a href="#searchPage" data-role="button" data-icon="search" data-theme="d">Search</a>
 			<h1>Fuelmap</h1>
 		</div><!-- /header -->
 	
@@ -119,31 +130,33 @@
 	</div>
 </div>
 
-<div id="loader">Loading ...</div>
-
 <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary -->
 	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 	<script>window.jQuery || document.write("<script src='js/libs/jquery-1.5.1.min.js'>\x3C/script>")</script>
 	
-	<script src="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.js"></script>
+	
 	<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script> 
 <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script> 
 
-   
+     	<script src="js/mylibs/jquery.when.js"></script>
 
   
   
 
  
   <!-- scripts concatenated and minified via ant build script-->
+
+  
+  	<script src="js/plugins.js"></script>
+	<script src="js/script.js"></script>
 	<script src="js/mylibs/RouteBoxer.js"></script>
 	<script src="js/mylibs/StyledMarker.js"></script>
 	<script src="js/mylibs/Fuel.js"></script>
-	<script src="js/mylibs/Fuel.Prices.js"></script>
+	<script src="js/mylibs/Fuel.Settings.js"></script>
 	<script src="js/mylibs/Fuel.Map.js"></script>
 	<script src="js/mylibs/Fuel.Station.js"></script>
-	<script src="js/plugins.js"></script>
-	<script src="js/script.js"></script>
+
+	<script src="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.js"></script>
   <!-- end scripts-->
  
 

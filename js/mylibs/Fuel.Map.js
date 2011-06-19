@@ -21,7 +21,7 @@ Fuel.Map.prototype.load = function(mapCanvas, fuelPrices){
 	this.fuelPrices = fuelPrices;
 }
 
-Fuel.Map.prototype.route = function(addressList, distance, brands, vouchers, fuelType, callback){
+Fuel.Map.prototype.route = function(addressList, callback){
 	this.clearMap();
 	
 	var self = this;
@@ -38,9 +38,9 @@ Fuel.Map.prototype.route = function(addressList, distance, brands, vouchers, fue
 		if (status == google.maps.DirectionsStatus.OK) {
 			self.directionsRenderer.setMap(self.map);
 			self.directionsRenderer.setDirections(result);
-			var boxes = self.routeBoxer.box(result.routes[0].overview_path, distance);
+			var boxes = self.routeBoxer.box(result.routes[0].overview_path, Fuel.Settings.distance);
 
-			callback(self.addStationMarkers(boxes, brands, vouchers, fuelType));
+			callback(self.addStationMarkers(boxes));
 		}
 	});
 }
@@ -49,16 +49,18 @@ Fuel.Map.prototype.route = function(addressList, distance, brands, vouchers, fue
  * 
  * @boxes An array of LatLngBounds
  */
-Fuel.Map.prototype.addStationMarkers = function(boxes, brands, vouchers, fuelType)
+Fuel.Map.prototype.addStationMarkers = function(boxes)
 {
  	this.removeStationMarkers();
 	var stations = [];
+	
+	var stationList = Fuel.Station.list;
+	
+	stationList.filter(Fuel.Map.fuelMapFilter);
 
-	for (var j = 0; j < this.fuelPrices.stationList.length; j++) {
-		var station = this.fuelPrices.stationList[j];
-		var brandsCheck = true;
+	for (var j = 0; j < stationList.length; j++) {
+		var station = stationList[j];
 		var boxesCheck = true;
-		var productTypeCheck = true;
 		
 		if( boxes )
 		{
@@ -72,32 +74,10 @@ Fuel.Map.prototype.addStationMarkers = function(boxes, brands, vouchers, fuelTyp
 			}
 		}
 		
-		if( fuelType )
-		{
-			productTypeCheck = station.hasProduct(fuelType);
-		}
-
-		if( brands )
-		{
-			brandsCheck = false;
-			for (var i = 0; i < brands.length; i++) {
-	  			if( ($.inArray(station.brand, brands) > -1) )
-				{
-					brandsCheck = true;
-					break;
-				}
-			}
-		}
-				
-		if( brandsCheck && boxesCheck && productTypeCheck )
+		if( boxesCheck )
   		{
   			stations.push(station);
-  			if( vouchers && vouchers[station.brand] !== undefined )
-  			{
-  				station.applyVoucher(vouchers[station.brand].amount)
-  			}
-
-  			var styleIcon = new StyledIcon(StyledIconTypes.BUBBLE,{color:"#ff0000",text:station.getPrice(fuelType)});
+  			var styleIcon = new StyledIcon(StyledIconTypes.BUBBLE,{color:"#ff0000",text:station.getPrice()});
     		var styleMaker1 = new StyledMarker({styleIcon:styleIcon,position:station.latlng,map:this.map});
 			this.markersArray.push(styleMaker1);
 		}
@@ -120,6 +100,21 @@ Fuel.Map.prototype.removeStationMarkers = function()
 		this.markersArray[marker].setMap(null);
 	}
     this.markersArray.length = 0;
+}
+
+Fuel.Map.fuelMapFilter = function(element, index, array){
+	
+	if( ($.inArray(element.brand, Fuel.Settings.brands) > -1) && element.hasProduct(Fuel.Settings.product) )
+	{
+		if( (Fuel.Settings.vouchers.length > 0) && (Fuel.Settings.vouchers[element.brand] !== undefined ) )
+		{
+			element.applyVoucher(Fuel.Settings.vouchers[element.brand].amount)
+		}
+		
+		return true;
+	}
+	
+	return false;
 }
 
 Fuel.Map.sortPrices = function(a, b){

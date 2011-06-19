@@ -8,14 +8,11 @@ Fuel.Station = function Station(object)
 	this.address = object.address;
 	this.phone = object.phone;
 	this.latlng = new google.maps.LatLng(object.lat,object.lng);
-	
-
 };
 
-Fuel.Station.prototype.applyVoucher = function(amount)
-{
+Fuel.Station.prototype.applyVoucher = function(amount){
 	this.voucher = amount;
-}
+};
 
 Fuel.Station.prototype.hasProduct = function(productType)
 {
@@ -25,18 +22,12 @@ Fuel.Station.prototype.hasProduct = function(productType)
 	}
 	
 	return false;
-}
+};
 
-Fuel.Station.prototype.getPrice = function(priceType)
+
+Fuel.Station.prototype.getPrice = function()
 {
-	if( priceType === undefined )
-	{
-		priceType = "1";
-	}
-	
-	var price = this.prices[priceType];
-	
-
+	var price = this.prices[Fuel.Settings.fuelType];
 	
 	price = new Number(price);
 	if( this.voucher !== undefined )
@@ -45,4 +36,34 @@ Fuel.Station.prototype.getPrice = function(priceType)
 	}
 	
 	return price.toFixed(2);
-}
+};
+
+(function() {
+	var stationList = [],
+	brandList = [],
+	brandMap = {};
+	$.getJSON("/prices.js", function(rtnData)
+	{
+		for (var i=0; i < rtnData.data.length; i++) {
+			var station = new Fuel.Station(rtnData.data[i]);
+	
+			stationList.push(station);
+		
+			if( !$.isArray( brandMap[station.brand] ) )
+			{
+				brandMap[station.brand] = [];
+			}
+		};
+		
+		for ( var brand in brandMap )
+		{
+			brandList.push(brand);
+		}
+		
+		Fuel.Station.list = stationList;
+		Fuel.Settings.Base.brandList = brandList;
+		Fuel.Settings.load();
+		
+		$(document).trigger("stationListLoad");
+	});
+}());

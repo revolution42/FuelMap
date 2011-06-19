@@ -1,5 +1,9 @@
 // Set the hash to nothing for page load. We want the user to always start in the same place.
-window.location.hash = "";
+
+if( window.location.hash != "" )
+{
+	window.location = "http://" + window.location.hostname;
+}
 
 $(document).ready(function()
 {
@@ -32,36 +36,37 @@ $(document).ready(function()
 	}
 });
 
-$('body').bind("priceLoad", function()
-{
+$('#settings').live('pageshow',function(event, ui){
+	$( "#distance" ).val(Fuel.Settings.distance);
+	$( "#distance" ).slider('refresh');
+});
+
+$(document).when("mobileinit stationListLoad ready").done( function(){
 	// Declare variables	
-	var priceList = Fuel.Prices,
-		fuelMap = new Fuel.Map(document.getElementById("map"), priceList),
-		brands = $('#brands'),
-		vouchers = $('#vouchers'),
-		products = $('#products'),
-		distance = $( "#distance" ),
-		destination = $( "#addDestination" ),
-		search = $("#search");
+	var fuelMap = new Fuel.Map(document.getElementById("map")),
+		brandsSelectObj = $('#brands'),
+		vouchersSelectObj = $('#vouchers'),
+		productsSelectObj = $('#products'),
+		distanceObj = $( "#distance" ),
+		destinationObj = $( "#addDestination" ),
+		searchObj = $("#search"),
+		saveSettingsObj = $("#saveSettings");
 	
 	// Populate dropdowns
-	for (var i=0; i < priceList.brandList.length; i++) {
-		brands.append('<option value="' + i + '" selected="selected">' +  priceList.brandList[i] + '</option>');
+	for (var i=0; i < Fuel.Settings.Base.brandList.length; i++) {
+		brandsSelectObj.append('<option value="' + i + '" selected="selected">' +  Fuel.Settings.Base.brandList[i] + '</option>');
 	};
 	
-	for ( var productCode in priceList.products ){
-		products.append('<option value="' + productCode + '">' + priceList.products[productCode] + '</option>');
+	for ( var productCode in Fuel.Settings.Base.products ){
+		productsSelectObj.append('<option value="' + productCode + '">' + Fuel.Settings.Base.products[productCode] + '</option>');
 	}
 	
-	for (var i=0; i < priceList.voucherList.length; i++) {
-		vouchers.append('<option value="' + i + '">' +  priceList.voucherList[i].title + '</option>');
-	};
-	$('select').selectmenu("refresh");
-	
-
-
+	for (var i=0; i < Fuel.Settings.Base.voucherList.length; i++) {
+		vouchersSelectObj.append('<option value="' + i + '">' +  Fuel.Settings.Base.voucherList[i].title + '</option>');
+	}
+		
 	// Setup helper functions for dropdowns
-	brands.getSelected = function(){
+	brandsSelectObj.getSelected = function(){
 		var selectedArray = [];
 	
 		$("option:selected", this).each(function () {
@@ -71,7 +76,7 @@ $('body').bind("priceLoad", function()
 		
 		return selectedArray;
 	};
-	vouchers.getSelected = function(){
+	vouchersSelectObj.getSelected = function(){
 		var selectedVouchers = {};
 	
 		$("option:selected", this).each(function () {  	
@@ -98,8 +103,19 @@ $('body').bind("priceLoad", function()
 		return selectedVouchers;
 	};
 
+	saveSettingsObj.click(function()
+	{
+		$.mobile.pageLoading();
+		Fuel.Settings.products = productsSelectObj.val();
+		Fuel.Settings.voucherList = vouchersSelectObj.getSelected();
+		Fuel.Settings.brands = brandsSelectObj.getSelected();
+		Fuel.Settings.distance = distanceObj.val();
+
+		Fuel.Settings.save();
+	});
+
 	// Setup onclicks for search
-	search.click(function(){
+	searchObj.click(function(){
 		
 		if( $("#fromAddress").val().length > 0 )
 		{
@@ -127,7 +143,6 @@ $('body').bind("priceLoad", function()
 				    setSingleLocation(results[0].geometry.location);
 				    
 				} else {
-					console.log('location not found');
 					// TODO Nice message if nothing found
 				}
 			});	  
@@ -150,18 +165,13 @@ $('body').bind("priceLoad", function()
 			
 			fuelMap.route(
 				addressArray,
-				2,// @TODO uses the slider values 
-				brands.getSelected(),
-				vouchers.getSelected(),
-				products.val(),
-				
 				createSideListStations
 			);
 		}
 	});
 	
-	destination.click(function(){
-		var container = $('<div class="ui-field-contain ui-body ui-br"><label class="removeDestination"><a href="index.html" data-role="button" data-icon="delete" class="removeButton">&nbsp;</a></label></div>');
+	destinationObj.click(function(){
+		var container = $('<div class="ui-field-contain ui-body ui-br"><label class="removeDestination"><a href="index.html" data-role="button" data-icon="minus" class="removeButton">&nbsp;</a></label></div>');
 		var button = $('<input value=""  data-theme="d" />');
 		$("#addressList").append(container.append(button));
 		$("a", container).button().click(function()
@@ -176,7 +186,6 @@ $('body').bind("priceLoad", function()
 	});
 	
 	doGeolocation();
-	$('#loader').remove();
 	//
 	// FUNCTIONS
 	// ---------------------------------------------------------------
@@ -196,7 +205,7 @@ $('body').bind("priceLoad", function()
 		{
 			if( i < 10 )
 			{
-				var stationObj = $("<li><a><h3>" + station.getPrice(products.val()) + "</h3><p>" + station.tradingName + "</p></a></li>");
+				var stationObj = $("<li><a><h3>" + station.getPrice() + "</h3><p>" + station.tradingName + "</p></a></li>");
 				
 				priceContainer.append(stationObj);
 				stationObj.click(function()
@@ -219,7 +228,6 @@ $('body').bind("priceLoad", function()
 			}
 		});
 	
-		// TODO Find a nicer solution for this, sometimes the pricecontainer hasn't been fully initialised before its been populated by this function.
 		try
 		{
 			priceContainer.listview('refresh');
@@ -229,7 +237,7 @@ $('body').bind("priceLoad", function()
 			
 		}
 		
-			$.mobile.changePage("#results", 'none');	
+		$.mobile.changePage("#results", 'none');	
 	}
 	
 	function setSingleLocation(latlng)
@@ -261,6 +269,7 @@ $('body').bind("priceLoad", function()
 				navigator.geolocation.getCurrentPosition(
 					function(position)
 					{
+						$.mobile.pageLoading();
 						var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 						setSingleLocation(userLocation);
 
