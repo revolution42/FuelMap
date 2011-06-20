@@ -207,8 +207,27 @@ a:hover { color: #036; }
 
 .removeDestination 
 {
-	width: 18% !important;
+	width: 50px !important;
 	margin-top: -3px !important;
+	font-size: 12px !important;
+	line-height: 15px !important;
+	margin-left: 4px !important;
+	display:inline-block !important;
+}
+
+#fromLabel
+{
+	width: 18% !important;
+	text-align: center;
+	padding-top: 7px;
+	display:inline-block;
+}
+
+.newDestination, #fromAddress
+{
+	width: 73% !important;
+	display:inline-block !important;
+	float: right;
 }
 
 /**
@@ -259,6 +278,20 @@ a:hover { color: #036; }
 {
 	display: none;
 }
+
+.label
+{
+	display: block !important;;
+	width: 100% !important;
+	
+}
+
+.min-width-480px .ui-select
+{
+	width: 100% !important;
+}
+
+
 
 
 /**
