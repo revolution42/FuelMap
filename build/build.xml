@@ -442,33 +442,28 @@
     </target>
     
     
-    
-    
-    
-    
-      <!-- JAVASCRIPT -->
+    <!-- JAVASCRIPT -->
     <target name="-js.main.concat" depends="-load-build-info" description="(PRIVATE) Concatenates the JS files in dir.js">
         <echo message="Concatenating Main JS scripts..."/>
         <concat destfile="./${dir.publish}/${dir.js}/scripts-${build.number}.js">
-
-			<fileset file="./${dir.publish}/${dir.js}/mylibs/RouteBoxer.js" />
-			<fileset file="./${dir.publish}/${dir.js}/mylibs/StyledMarker.js" />
-			<fileset file="./${dir.publish}/${dir.js}/mylibs/Fuel.js" />
-			<fileset file="./${dir.publish}/${dir.js}/mylibs/Fuel.Prices.js" />
-			<fileset file="./${dir.publish}/${dir.js}/mylibs/Fuel.Map.js" />
-			<fileset file="./${dir.publish}/${dir.js}/mylibs/Fuel.Station.js" />
-			<fileset file="./${dir.publish}/${dir.js}/plugins.js" />
-			<fileset file="./${dir.publish}/${dir.js}/script.js" />
+            <fileset dir="./${dir.publish}/">
+                <include name="**/${dir.js.main}/*.min.js"/>
+                <exclude name="**/${dir.js.mylibs}/*.js"/>
+                <exclude name="**/${dir.js.libs}/*.js"/>
+            </fileset>      
         </concat>
     </target>
-    <!-- JAVASCRIPT -->
-    
-    
     
     <target name="-js.mylibs.concat" depends="-load-build-info" description="(PRIVATE) Concatenates the JS files in dir.js.mylibs">
         <echo message="Concatenating JS libraries"/>
         <concat destfile="./${dir.publish}/${dir.js}/libs-${build.number}.js">
-         
+        	<fileset file="./${dir.publish}/${dir.js.mylibs}/jquery.when.min.js" />
+            <fileset file="./${dir.publish}/${dir.js.mylibs}/RouteBoxer.min.js" />
+            <fileset file="./${dir.publish}/${dir.js.mylibs}/StyledMarker.min.js" />
+            <fileset file="./${dir.publish}/${dir.js.mylibs}/Fuel.min.js" />
+            <fileset file="./${dir.publish}/${dir.js.mylibs}/Fuel.Settings.min.js" />
+            <fileset file="./${dir.publish}/${dir.js.mylibs}/Fuel.Map.min.js" />
+            <fileset file="./${dir.publish}/${dir.js.mylibs}/Fuel.Station.min.js" />
         </concat>
     </target>
     
