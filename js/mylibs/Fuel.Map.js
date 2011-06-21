@@ -21,7 +21,7 @@ Fuel.Map.prototype.load = function(mapCanvas, fuelPrices){
 	this.fuelPrices = fuelPrices;
 }
 
-Fuel.Map.prototype.route = function(addressList, callback){
+Fuel.Map.prototype.route = function(addressList, callback, onfail){
 	this.clearMap();
 	
 	var self = this;
@@ -41,6 +41,10 @@ Fuel.Map.prototype.route = function(addressList, callback){
 			var boxes = self.routeBoxer.box(result.routes[0].overview_path, Fuel.Settings.distance);
 
 			callback(self.addStationMarkers(boxes));
+		}
+		else
+		{
+			onfail();
 		}
 	});
 }

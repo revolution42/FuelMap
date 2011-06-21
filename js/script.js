@@ -5,8 +5,12 @@ if( window.location.hash != "" )
 	window.location = "http://" + window.location.hostname;
 }
 
+
+
 $(document).ready(function()
 {
+	$.mobile.page.prototype.options.backBtnTheme = "c";
+	
 	var iphone = false;
 	if( (navigator.userAgent.match(/iPhone/i)))  {
 		iphone = true;
@@ -103,9 +107,9 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 		return selectedVouchers;
 	};
 
-	saveSettingsObj.click(function()
+	saveSettingsObj.bind("vclick", function()
 	{
-		$.mobile.pageLoading();
+		$.mobile.showPageLoadingMsg();
 		Fuel.Settings.products = productsSelectObj.val();
 		Fuel.Settings.voucherList = vouchersSelectObj.getSelected();
 		Fuel.Settings.brands = brandsSelectObj.getSelected();
@@ -115,11 +119,11 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 	});
 
 	// Setup onclicks for search
-	searchObj.click(function(){
-		
+	searchObj.bind("vclick", function(){
+		$("#resultView").empty();
 		if( $("#fromAddress").val().length > 0 )
 		{
-			$.mobile.pageLoading();
+			$.mobile.showPageLoadingMsg();
 			var destinations = $("input.newDestination");
 			
 			if( destinations.length == 0 )
@@ -143,7 +147,7 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 				    setSingleLocation(results[0].geometry.location);
 				    
 				} else {
-					$.mobile.changePage("#nothingFound");
+					$.mobile.changePage($("#nothingFound"));
 				}
 			});	  
 		}
@@ -165,16 +169,24 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 			
 			fuelMap.route(
 				addressArray,
-				createSideListStations
+				createSideListStations,
+				function(){
+					$.mobile.changePage($("#nothingFound"));
+				}
 			);
 		}
 	});
 	
-	destinationObj.click(function(){
+	var event = "click";
+	if (Modernizr.touch){
+		event = "tap";
+	}
+	
+	destinationObj.bind(event, function(){
 		var container = $('<div class="ui-field-contain ui-body ui-br"><label class="removeDestination"><a href="index.html" data-role="button" data-icon="minus" class="removeButton">&nbsp;</a></label></div>');
 		var button = $('<input value=""  data-theme="d" />');
 		$("#addressList").append(container.append(button));
-		$("a", container).button().click(function()
+		$("a", container).button().bind(event, function()
 		{
 			container.remove();
 			return false;
@@ -208,12 +220,12 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 				var stationObj = $("<li><a><h3>" + station.getPrice() + "</h3><p>" + station.tradingName + "</p></a></li>");
 				
 				priceContainer.append(stationObj);
-				stationObj.click(function()
+				stationObj.bind("vclick", function()
 				{
 					if( $("html").hasClass('small') )
 					{
-						$.mobile.pageLoading();
-						$.mobile.changePage("#mapContainer");
+						
+						$.mobile.changePage($("#mapContainer"));
 						$("#map").css({
 							width: '100%',
 							height: '100%'
@@ -237,7 +249,7 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 			
 		}
 		
-		$.mobile.changePage("#results", 'none');	
+		$.mobile.changePage($("#results"), 'none');	
 	}
 	
 	function setSingleLocation(latlng)
