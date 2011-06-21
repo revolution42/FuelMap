@@ -143,7 +143,7 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 				    setSingleLocation(results[0].geometry.location);
 				    
 				} else {
-					// TODO Nice message if nothing found
+					$.mobile.changePage("#nothingFound");
 				}
 			});	  
 		}
