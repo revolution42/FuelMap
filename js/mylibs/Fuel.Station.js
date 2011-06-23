@@ -3,11 +3,13 @@ Fuel.Station = function Station(object)
 	this.title = object.tradingName;
 	this.brand = object.brand;
 	this.prices = object.prices;
+	this.pricesTomorrow = object.pricesTomorrow;
 	this.tradingName = object.tradingName;
 	this.location = object.location;
 	this.address = object.address;
 	this.phone = object.phone;
 	this.latlng = new google.maps.LatLng(object.lat,object.lng);
+	this.tomorrow = false;
 };
 
 Fuel.Station.prototype.applyVoucher = function(amount){
@@ -28,6 +30,11 @@ Fuel.Station.prototype.hasProduct = function(productType)
 Fuel.Station.prototype.getPrice = function()
 {
 	var price = this.prices[Fuel.Settings.fuelType];
+	
+	if( Fuel.Settings.tomorrow )
+	{
+		price = this.pricesTomorrow[Fuel.Settings.fuelType];
+	}
 	
 	price = new Number(price);
 	if( this.voucher !== undefined )

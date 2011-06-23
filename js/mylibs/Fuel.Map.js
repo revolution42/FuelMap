@@ -150,3 +150,6 @@ Fuel.Map.findPoint = function(lat,lng,brng, dist) {
     lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
     return new google.maps.LatLng(lat2.toDeg(),lon2.toDeg());
 }
+
+
+

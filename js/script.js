@@ -113,7 +113,7 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 		Fuel.Settings.products = productsSelectObj.val();
 		Fuel.Settings.voucherList = vouchersSelectObj.getSelected();
 		Fuel.Settings.brands = brandsSelectObj.getSelected();
-		Fuel.Settings.distance = distanceObj.val();
+		Fuel.Settings.distance = $("#distance").val();
 
 		Fuel.Settings.save();
 	});
@@ -137,44 +137,6 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 		}
 
 		return false;
-		
-		function singleSearch() {
-			var address = $("#fromAddress").val();
-			var geocoder = new google.maps.Geocoder();
-			geocoder.geocode( { 'address': address}, function(results, status) {
-				if (status == google.maps.GeocoderStatus.OK) {
-
-				    setSingleLocation(results[0].geometry.location);
-				    
-				} else {
-					$.mobile.changePage($("#nothingFound"));
-				}
-			});	  
-		}
-		
-		function multiSearch()
-		{
-			var addressArray = [
-				{
-					location: $("#fromAddress").val()
-				}
-			];
-			
-			$("input.newDestination").each( function()
-			{
-				addressArray.push({
-					location: this.value
-				});
-			});
-			
-			fuelMap.route(
-				addressArray,
-				createSideListStations,
-				function(){
-					$.mobile.changePage($("#nothingFound"));
-				}
-			);
-		}
 	});
 	
 	var event = "click";
@@ -196,6 +158,74 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 		
 		return false;
 	});
+	
+	$("#tomorrows").bind(event, function(){
+		
+		if( $(this).hasClass("today") )
+		{
+			Fuel.Settings.tomorrow = false;
+			$('.ui-btn-text', this).text("Tomorrows Prices");
+			$(this).removeClass("today");
+		}
+		else
+		{
+			Fuel.Settings.tomorrow = true;
+			$('.ui-btn-text', this).text("Todays Prices");
+			$(this).addClass("today");
+		}
+	
+		$.mobile.showPageLoadingMsg();
+		var destinations = $("input.newDestination");
+		
+		if( destinations.length == 0 )
+		{
+			singleSearch();
+		}
+		else
+		{
+			multiSearch();
+		}
+		
+		return false;		
+	});
+	
+	function singleSearch() {
+		var address = $("#fromAddress").val();
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode( { 'address': address}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+
+			    setSingleLocation(results[0].geometry.location);
+			    
+			} else {
+				$.mobile.changePage($("#nothingFound"));
+			}
+		});	  
+	}
+	
+	function multiSearch()
+	{
+		var addressArray = [
+			{
+				location: $("#fromAddress").val()
+			}
+		];
+		
+		$("input.newDestination").each( function()
+		{
+			addressArray.push({
+				location: this.value
+			});
+		});
+		
+		fuelMap.route(
+			addressArray,
+			createSideListStations,
+			function(){
+				$.mobile.changePage($("#nothingFound"));
+			}
+		);
+	}
 	
 	doGeolocation();
 	//
@@ -236,6 +266,8 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 					$("#resultView li").removeClass('ui-btn-active');
 					fuelMap.map.setCenter(station.latlng);
 					fuelMap.map.setZoom(15);
+					
+					
 				});
 			}
 		});
@@ -248,7 +280,7 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 		{
 			
 		}
-		
+		$.mobile.hidePageLoadingMsg();
 		$.mobile.changePage($("#results"), 'none');	
 	}
 	
@@ -256,7 +288,7 @@ $(document).when("mobileinit stationListLoad ready").done( function(){
 	{
 		fuelMap.clearMap();
 		
-		var stations = fuelMap.addStationMarkers([Fuel.Map.createBoxAroundPoint(latlng, 5)]);
+		var stations = fuelMap.addStationMarkers([Fuel.Map.createBoxAroundPoint(latlng, Fuel.Settings.distance*2)]);
 		createSideListStations(stations);
 
 		fuelMap.map.setCenter(latlng);

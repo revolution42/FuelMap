@@ -263,7 +263,7 @@ a:hover { color: #036; }
 
 .large #resultView
 {
-	width: 305px;
+	width: 312px;
 }
 
 
@@ -277,6 +277,13 @@ a:hover { color: #036; }
 .large #mapContainer .ui-header
 {
 	display: none;
+}
+
+.large #tomorrows
+{
+	float: left;
+	position: relative;
+	margin-left: 159px;
 }
 
 .label
